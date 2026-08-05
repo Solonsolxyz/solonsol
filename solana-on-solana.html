@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solana on Solana ($SOS)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060706;
+    --bg-soft:#0a0c0b;
+    --green:#14F195;
+    --cyan:#22D3C5;
+    --blue:#4C7EFF;
+    --purple:#9945FF;
+    --white:#F4F7F5;
+    --gray:#868D8B;
+    --gray-dim:#565B59;
+    --line:rgba(244,247,245,0.09);
+    --line-strong:rgba(244,247,245,0.16);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--white);
+    font-family:'Space Grotesk',sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--green);color:#060706;}
+
+  .display{font-family:'Chakra Petch',sans-serif;text-transform:uppercase;letter-spacing:0.01em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  .grad-text{
+    background:linear-gradient(100deg,var(--green) 0%, var(--cyan) 35%, var(--blue) 65%, var(--purple) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+
+  /* background atmosphere */
+  .atmosphere{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 900px 500px at 18% -6%, rgba(20,241,149,0.10), transparent 60%),
+      radial-gradient(ellipse 900px 600px at 85% 8%, rgba(153,69,255,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 50% 105%, rgba(76,126,255,0.08), transparent 60%);
+  }
+  .grain{
+    position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.035;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* nav */
+  header{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 32px;
+    background:rgba(6,7,6,0.72);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{width:26px;height:20px;}
+  .brand-name{font-size:15px;font-weight:600;letter-spacing:0.04em;}
+  .nav-links{display:flex;align-items:center;gap:28px;}
+  .nav-links a{font-size:13px;color:var(--gray);letter-spacing:0.03em;transition:color .15s ease;}
+  .nav-links a:hover{color:var(--white);}
+  .nav-cta{
+    display:flex;align-items:center;gap:6px;
+    padding:9px 16px;border:1px solid var(--line-strong);border-radius:100px;
+    font-size:13px;font-weight:500;transition:border-color .15s ease, background .15s ease;
+  }
+  .nav-cta:hover{border-color:var(--green);background:rgba(20,241,149,0.06);}
+
+  /* hero */
+  .hero{
+    position:relative;z-index:2;
+    padding:96px 32px 60px;
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+    min-height:88vh;justify-content:center;
+  }
+  .recursion{
+    position:absolute;top:50%;left:50%;
+    width:1px;height:1px;
+    z-index:0;pointer-events:none;
+  }
+  .recursion .ring{
+    position:absolute;top:0;left:0;
+    display:flex;flex-direction:column;gap:5px;
+    transform-origin:center;
+    animation:spin 90s linear infinite;
+  }
+  .recursion .ring .bar{
+    height:9px;border-radius:2px;
+  }
+  @keyframes spin{ to{ transform: translate(-50%,-50%) rotate(360deg); } }
+  @keyframes spinRev{ to{ transform: translate(-50%,-50%) rotate(-360deg); } }
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:7px 14px;border:1px solid var(--line-strong);border-radius:100px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gray);
+    margin-bottom:28px;position:relative;z-index:2;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.6s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
+
+  .hero h1{
+    position:relative;z-index:2;
+    font-size:clamp(42px, 8.4vw, 104px);
+    line-height:0.96;
+    font-weight:700;
+    max-width:1000px;
+  }
+  .hero h1 .line2{display:block;}
+
+  .hero-sub{
+    position:relative;z-index:2;
+    margin-top:26px;
+    font-size:clamp(15px,2vw,18px);
+    color:var(--gray);
+    max-width:520px;
+    line-height:1.55;
+  }
+  .hero-sub b{color:var(--white);font-weight:600;}
+
+  .hero-ctas{
+    position:relative;z-index:2;
+    display:flex;gap:14px;margin-top:38px;flex-wrap:wrap;justify-content:center;
+  }
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    padding:14px 26px;border-radius:100px;font-size:14px;font-weight:600;
+    letter-spacing:0.02em;
+    transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+  }
+  .btn-primary{
+    background:linear-gradient(100deg,var(--green),var(--cyan) 45%,var(--blue) 80%,var(--purple));
+    color:#05100b;
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(20,241,149,0.25);}
+  .btn-ghost{
+    border:1px solid var(--line-strong);color:var(--white);
+  }
+  .btn-ghost:hover{border-color:var(--white);}
+
+  /* ticker */
+  .ticker{
+    position:relative;z-index:2;
+    width:100%;overflow:hidden;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:14px 0;margin-top:64px;
+    background:var(--bg-soft);
+  }
+  .ticker-track{
+    display:flex;width:max-content;gap:40px;
+    animation:tick 26s linear infinite;
+  }
+  .ticker-track span{
+    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.08em;
+    color:var(--gray-dim);white-space:nowrap;
+  }
+  .ticker-track span.grad-text{color:transparent;}
+  @keyframes tick{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+  /* countdown + CA */
+  .status-row{
+    position:relative;z-index:2;
+    display:flex;flex-wrap:wrap;justify-content:center;gap:16px;
+    margin-top:44px;
+  }
+  .card{
+    background:var(--bg-soft);border:1px solid var(--line);border-radius:16px;
+    padding:20px 26px;min-width:200px;
+  }
+  .card-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;color:var(--gray-dim);text-transform:uppercase;margin-bottom:10px;}
+  .countdown{display:flex;gap:16px;}
+  .countdown .unit{text-align:center;}
+  .countdown .num{font-family:'Chakra Petch',sans-serif;font-size:28px;font-weight:700;}
+  .countdown .lab{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gray);letter-spacing:0.1em;margin-top:2px;}
+  .ca-value{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--gray);display:flex;align-items:center;gap:10px;}
+  .ca-value .lock{width:14px;height:14px;flex-shrink:0;opacity:0.6;}
+
+  /* sections generic */
+  section{position:relative;z-index:2;}
+  .section-pad{padding:120px 32px;}
+  .kicker{
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.14em;
+    color:var(--green);text-transform:uppercase;margin-bottom:16px;display:block;
+  }
+  h2.display{font-size:clamp(28px,4vw,44px);font-weight:600;line-height:1.1;}
+
+  /* lore */
+  .lore{border-top:1px solid var(--line);}
+  .lore-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:64px;align-items:start;}
+  .lore-grid p{color:var(--gray);font-size:16px;line-height:1.75;margin-top:20px;max-width:480px;}
+  .log{
+    background:var(--bg-soft);border:1px solid var(--line);border-radius:14px;padding:22px 24px;
+    font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2.1;color:var(--gray);
+  }
+  .log .k{color:var(--gray-dim);}
+  .log .v{color:var(--white);}
+  .log .v.grad-text{font-weight:600;}
+
+  /* how to buy */
+  .htb{border-top:1px solid var(--line);}
+  .htb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:52px;}
+  .htb-item{background:var(--bg);padding:34px 28px;}
+  .htb-item .idx{font-family:'Chakra Petch',sans-serif;font-size:13px;color:var(--gray-dim);letter-spacing:0.1em;}
+  .htb-item h3{font-family:'Chakra Petch',sans-serif;font-size:19px;font-weight:600;margin-top:14px;text-transform:uppercase;}
+  .htb-item p{color:var(--gray);font-size:14px;line-height:1.65;margin-top:10px;}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:44px 32px 36px;}
+  .foot-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+  .foot-brand{display:flex;align-items:center;gap:10px;color:var(--gray);font-size:13px;}
+  .foot-brand .brand-mark{width:20px;height:15px;opacity:0.7;}
+  .foot-links{display:flex;gap:24px;}
+  .foot-links a{font-size:13px;color:var(--gray);transition:color .15s ease;}
+  .foot-links a:hover{color:var(--white);}
+  .disclaimer{margin-top:24px;font-size:11.5px;color:var(--gray-dim);line-height:1.6;max-width:720px;}
+
+  @media (max-width:860px){
+    .lore-grid{grid-template-columns:1fr;gap:36px;}
+    .htb-grid{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+    .section-pad{padding:80px 20px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="atmosphere"></div>
+<div class="grain"></div>
+
+<header>
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 40 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="navg" x1="0" y1="0" x2="40" y2="30" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#14F195"/>
+          <stop offset="0.5" stop-color="#22D3C5"/>
+          <stop offset="1" stop-color="#9945FF"/>
+        </linearGradient>
+      </defs>
+      <polygon points="6,0 40,0 34,9 0,9" fill="url(#navg)"/>
+      <polygon points="0,10.5 34,10.5 40,19.5 6,19.5" fill="url(#navg)"/>
+      <polygon points="6,21 40,21 34,30 0,30" fill="url(#navg)"/>
+    </svg>
+    <span class="brand-name display">SOS</span>
+  </div>
+  <nav class="nav-links">
+    <a href="#lore">Lore</a>
+    <a href="#buy">How to buy</a>
+    <a href="#" onclick="return false;">Chart</a>
+  </nav>
+  <a class="nav-cta" href="#" onclick="return false;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.5h2.04L6.5 3.24H4.31L17.6 20.65Z"/></svg>
+    Follow on X
+  </a>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="recursion" aria-hidden="true">
+      <div class="ring" id="ring1" style="animation-duration:120s;">
+        <div class="bar" style="width:640px;background:linear-gradient(90deg,#14F195,#22D3C5);opacity:0.05;transform:translateX(-320px) skewX(-18deg);"></div>
+        <div class="bar" style="width:640px;background:linear-gradient(90deg,#22D3C5,#4C7EFF);opacity:0.05;transform:translateX(-320px) skewX(-18deg);"></div>
+        <div class="bar" style="width:640px;background:linear-gradient(90deg,#4C7EFF,#9945FF);opacity:0.05;transform:translateX(-320px) skewX(-18deg);"></div>
+      </div>
+      <div class="ring" id="ring2" style="animation-name:spinRev;animation-duration:150s;">
+        <div class="bar" style="width:440px;background:linear-gradient(90deg,#14F195,#22D3C5);opacity:0.08;transform:translateX(-220px) skewX(-18deg);"></div>
+        <div class="bar" style="width:440px;background:linear-gradient(90deg,#22D3C5,#4C7EFF);opacity:0.08;transform:translateX(-220px) skewX(-18deg);"></div>
+        <div class="bar" style="width:440px;background:linear-gradient(90deg,#4C7EFF,#9945FF);opacity:0.08;transform:translateX(-220px) skewX(-18deg);"></div>
+      </div>
+      <div class="ring" id="ring3" style="animation-duration:100s;">
+        <div class="bar" style="width:260px;background:linear-gradient(90deg,#14F195,#22D3C5);opacity:0.14;transform:translateX(-130px) skewX(-18deg);"></div>
+        <div class="bar" style="width:260px;background:linear-gradient(90deg,#22D3C5,#4C7EFF);opacity:0.14;transform:translateX(-130px) skewX(-18deg);"></div>
+        <div class="bar" style="width:260px;background:linear-gradient(90deg,#4C7EFF,#9945FF);opacity:0.14;transform:translateX(-130px) skewX(-18deg);"></div>
+      </div>
+    </div>
+
+    <div class="eyebrow"><span class="dot"></span> TEASER PHASE &middot; NOT YET LIVE</div>
+
+    <h1 class="display">
+      <span class="line2">SOLANA ON</span>
+      <span class="line2 grad-text">SOLANA</span>
+    </h1>
+
+    <p class="hero-sub">The chain building the chain. <b>$SOS</b> is a Solana token that runs on Solana &mdash; the most recursive thing to ever happen on the fastest L1 in crypto.</p>
+
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="#" onclick="return false;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.5h2.04L6.5 3.24H4.31L17.6 20.65Z"/></svg>
+        Follow the drop
+      </a>
+      <a class="btn btn-ghost" href="#buy">How it launches</a>
+    </div>
+
+    <div class="ticker">
+      <div class="ticker-track">
+        <span>SOLANA ON SOLANA</span><span class="grad-text">$SOS</span>
+        <span>RUNS ON THE CHAIN IT'S NAMED AFTER</span><span class="grad-text">$SOS</span>
+        <span>NO PRESALE</span><span class="grad-text">$SOS</span>
+        <span>NO TEAM ALLOCATION</span><span class="grad-text">$SOS</span>
+        <span>SOLANA ON SOLANA</span><span class="grad-text">$SOS</span>
+        <span>RUNS ON THE CHAIN IT'S NAMED AFTER</span><span class="grad-text">$SOS</span>
+        <span>NO PRESALE</span><span class="grad-text">$SOS</span>
+        <span>NO TEAM ALLOCATION</span><span class="grad-text">$SOS</span>
+      </div>
+    </div>
+
+    <div class="status-row">
+      <div class="card">
+        <div class="card-label">Launch in</div>
+        <div class="countdown" id="countdown">
+          <div class="unit"><div class="num" id="cd-d">00</div><div class="lab">DAYS</div></div>
+          <div class="unit"><div class="num" id="cd-h">00</div><div class="lab">HRS</div></div>
+          <div class="unit"><div class="num" id="cd-m">00</div><div class="lab">MIN</div></div>
+          <div class="unit"><div class="num" id="cd-s">00</div><div class="lab">SEC</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">Contract address</div>
+        <div class="ca-value">
+          <svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          revealed at launch
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lore section-pad" id="lore">
+    <div class="wrap lore-grid">
+      <div>
+        <span class="kicker">// the concept</span>
+        <h2 class="display">A token built on Solana, about Solana, for the people who never left Solana.</h2>
+        <p>Every cycle needs a mirror. $SOS doesn't pretend to be infrastructure, a payments rail, or the next big L2. It's Solana, pointed at itself &mdash; a token that only exists because the chain it runs on got fast enough, cheap enough, and meme-pilled enough to deserve one.</p>
+        <p>No roadmap that promises a chain, an app, or a "utility" nobody asked for. Just sub-cent fees, sub-second blocks, and a name that says exactly what it is.</p>
+      </div>
+      <div class="log">
+        <div><span class="k">chain</span> &nbsp;&nbsp;<span class="v grad-text">Solana</span></div>
+        <div><span class="k">token</span> &nbsp;&nbsp;<span class="v grad-text">Solana on Solana</span></div>
+        <div><span class="k">ticker</span> &nbsp;<span class="v">$SOS</span></div>
+        <div><span class="k">supply</span> &nbsp;<span class="v">TBA at launch</span></div>
+        <div><span class="k">tax</span> &nbsp;&nbsp;&nbsp;<span class="v">0 / 0</span></div>
+        <div><span class="k">team</span> &nbsp;&nbsp;<span class="v">0%</span></div>
+        <div><span class="k">status</span> &nbsp;<span class="v grad-text">teasing</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="htb section-pad" id="buy">
+    <div class="wrap">
+      <span class="kicker">// when it's live</span>
+      <h2 class="display">How to ape, in advance</h2>
+      <div class="htb-grid">
+        <div class="htb-item">
+          <div class="idx display">01</div>
+          <h3>Get a wallet</h3>
+          <p>Phantom or Solflare. Fund it with SOL &mdash; you'll need it for gas and for the swap.</p>
+        </div>
+        <div class="htb-item">
+          <div class="idx display">02</div>
+          <h3>Watch for the CA</h3>
+          <p>The contract address drops here and on X the moment we launch. Anything posted before that isn't us.</p>
+        </div>
+        <div class="htb-item">
+          <div class="idx display">03</div>
+          <h3>Swap into $SOS</h3>
+          <p>Paste the CA into your swap of choice on Solana. That's it &mdash; you're now recursively bagholding.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-row">
+      <div class="foot-brand">
+        <svg class="brand-mark" viewBox="0 0 40 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="6,0 40,0 34,9 0,9" fill="currentColor"/>
+          <polygon points="0,10.5 34,10.5 40,19.5 6,19.5" fill="currentColor"/>
+          <polygon points="6,21 40,21 34,30 0,30" fill="currentColor"/>
+        </svg>
+        Solana on Solana &middot; $SOS
+      </div>
+      <div class="foot-links">
+        <a href="#" onclick="return false;">X / Twitter</a>
+        <a href="#" onclick="return false;">Telegram</a>
+        <a href="#buy">How to buy</a>
+      </div>
+    </div>
+    <p class="disclaimer">$SOS is a memecoin with no intrinsic value or expectation of financial return. It exists purely for entertainment. There is no formal team, no roadmap promises, and no guarantee of liquidity. Nothing on this page is financial advice &mdash; do your own research before interacting with any token or contract address.</p>
+  </div>
+</footer>
+
+<script>
+  // ---- Countdown: edit TARGET_DATE to your real launch time ----
+  const TARGET_DATE = new Date("2026-08-12T18:00:00Z").getTime();
+
+  function tick(){
+    const now = Date.now();
+    let diff = Math.max(0, TARGET_DATE - now);
+    const d = Math.floor(diff / (1000*60*60*24));
+    const h = Math.floor((diff / (1000*60*60)) % 24);
+    const m = Math.floor((diff / (1000*60)) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    const pad = n => String(n).padStart(2,"0");
+    document.getElementById("cd-d").textContent = pad(d);
+    document.getElementById("cd-h").textContent = pad(h);
+    document.getElementById("cd-m").textContent = pad(m);
+    document.getElementById("cd-s").textContent = pad(s);
+  }
+  tick();
+  setInterval(tick, 1000);
+</script>
+
+</body>
+</html>
