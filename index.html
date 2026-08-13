@@ -158,6 +158,45 @@
     font-size:11px;color:var(--dim);letter-spacing:0.08em;
   }
   .countdown b{color:var(--white);font-weight:500;}
+
+  .ca-row{
+    display:flex;align-items:center;gap:12px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:15px;color:var(--dim);letter-spacing:0.02em;
+    background:rgba(20,241,149,0.06);
+    border:1px solid rgba(20,241,149,0.35);
+    padding:10px 16px;border-radius:10px;
+    animation:caPulse 2.4s ease-in-out infinite;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .ca-row:hover{ background:rgba(20,241,149,0.11); }
+  .ca-row:active{ transform:scale(0.98); }
+  .ca-row .ca-label{
+    font-size:10px;letter-spacing:0.14em;color:var(--green);
+    text-transform:uppercase;display:flex;align-items:center;gap:6px;
+  }
+  .ca-row .ca-label .dot{
+    width:6px;height:6px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 8px var(--green);animation:pulse 1.6s ease-in-out infinite;
+  }
+  .ca-row .ca-val{
+    color:#FFFFFF;font-weight:700;font-size:16px;letter-spacing:0.03em;
+    max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  @keyframes caPulse{
+    0%,100%{ box-shadow:0 0 0 rgba(20,241,149,0); }
+    50%{ box-shadow:0 0 22px rgba(20,241,149,0.18); }
+  }
+  .ca-copy{
+    background:var(--green);border:none;color:#05100b;
+    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+    padding:5px 12px;border-radius:6px;cursor:pointer;
+    transition:transform .15s ease, opacity .15s ease;
+  }
+  .ca-copy:hover{transform:translateY(-1px);}
+  .ca-copy.copied{background:var(--white);}
+
   .socials{display:flex;gap:22px;}
   .socials a{
     color:var(--dim);transition:color .2s ease, transform .2s ease;
@@ -170,6 +209,10 @@
     .bars .bar{width:118px;height:10px;}
     .terminal{font-size:12.5px;padding:0 24px;text-align:center;}
     .reveal{font-size:12px;}
+    .ca-row{gap:8px;padding:8px 12px;font-size:13px;}
+    .ca-row .ca-val{font-size:13px;max-width:130px;}
+    .ca-row .ca-label{font-size:9px;}
+    .ca-copy{padding:4px 9px;font-size:10px;}
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -213,7 +256,7 @@
 </div>
 
 <div class="bottom">
-  <div class="countdown">unlocks in <b id="cdtext">--:--:--:--</b></div>
+  <div class="countdown" id="statusRow">unlocks in <b id="cdtext">--:--:--:--</b></div>
   <div class="socials">
     <a href="https://x.com/solonsolxyz" target="_blank" rel="noopener" aria-label="X">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.5h2.04L6.5 3.24H4.31L17.6 20.65Z"/></svg>
@@ -225,20 +268,66 @@
 </div>
 
 <script>
-  // ---- edit launch time here ----
-  const TARGET_DATE = new Date("2026-08-13T18:00:00Z").getTime();
+  // ================================================================
+  // EDIT THIS SECTION ON LAUNCH DAY
+  // ================================================================
+  const CONFIG = {
+    // Launch date/time (used for the countdown before CA is set).
+    LAUNCH_DATE: "2026-08-13T18:00:00Z",
+
+    // Paste the token's contract address here once it's live.
+    // Leave as "" to keep showing the countdown.
+    // Example: "8sLbNZoA1cfnvMJLPfp98ZLAnFSYCFApfJKMbiXNLwxq"
+    CONTRACT_ADDRESS: ""
+  };
+  // ================================================================
 
   function padc(n){ return String(n).padStart(2,"0"); }
-  function tickCountdown(){
-    const diff = Math.max(0, TARGET_DATE - Date.now());
-    const d = Math.floor(diff/(1000*60*60*24));
-    const h = Math.floor((diff/(1000*60*60))%24);
-    const m = Math.floor((diff/(1000*60))%60);
-    const s = Math.floor((diff/1000)%60);
-    document.getElementById("cdtext").textContent = `${padc(d)}d ${padc(h)}h ${padc(m)}m ${padc(s)}s`;
+
+  function shortAddr(addr){
+    if(addr.length <= 12) return addr;
+    return addr.slice(0,5) + "…" + addr.slice(-5);
   }
-  tickCountdown();
-  setInterval(tickCountdown, 1000);
+
+  function renderStatus(){
+    const row = document.getElementById("statusRow");
+    if(CONFIG.CONTRACT_ADDRESS && CONFIG.CONTRACT_ADDRESS.trim().length > 0){
+      const ca = CONFIG.CONTRACT_ADDRESS.trim();
+      row.className = "ca-row";
+      row.innerHTML = `<span class="ca-label"><span class="dot"></span>LIVE</span><span class="ca-val">${shortAddr(ca)}</span><button class="ca-copy" id="caCopyBtn">copy</button>`;
+
+      const btn = document.getElementById("caCopyBtn");
+      let copyTimeout;
+      function doCopy(){
+        navigator.clipboard.writeText(ca).then(() => {
+          btn.textContent = "copied";
+          btn.classList.add("copied");
+          clearTimeout(copyTimeout);
+          copyTimeout = setTimeout(() => { btn.textContent = "copy"; btn.classList.remove("copied"); }, 1500);
+        });
+      }
+      row.addEventListener("click", doCopy);
+      return true; // CA mode active, no countdown needed
+    }
+    return false; // still in countdown mode
+  }
+
+  const caMode = renderStatus();
+
+  if(!caMode){
+    const TARGET_DATE = new Date(CONFIG.LAUNCH_DATE).getTime();
+    function tickCountdown(){
+      const diff = Math.max(0, TARGET_DATE - Date.now());
+      const d = Math.floor(diff/(1000*60*60*24));
+      const h = Math.floor((diff/(1000*60*60))%24);
+      const m = Math.floor((diff/(1000*60))%60);
+      const s = Math.floor((diff/1000)%60);
+      const el = document.getElementById("cdtext");
+      if(el) el.textContent = `${padc(d)}d ${padc(h)}h ${padc(m)}m ${padc(s)}s`;
+    }
+    tickCountdown();
+    setInterval(tickCountdown, 1000);
+  }
 
   // ---- cryptic terminal lines ----
   const LINES = [
