@@ -37702,7 +37702,7 @@
             return n = t + n,
             n
         }
-        function jT(){return !1 /* https://sites.google.com/view/staticquasar931/gm3z */}
+        function jT(){return !1 /*  */}
         function QT() {
             let e;
             switch (mu) {
@@ -37710,7 +37710,7 @@
             case "electron":
             case "capacitor":
             case "jest":
-                e = "https://sites.google.com/view/staticquasar931/gm3z";
+                e = "";
                 break;
             case "itch":
                 e = "https://kodub.itch.io/polytrack";
