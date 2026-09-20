@@ -756,3 +756,29 @@ hr {
     margin-top: 90px !important; }
   .game-message .lower {
     margin-top: 30px !important; } }
+
+/* Layout wrapper to align game and ad side-by-side */
+.game-and-ad-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px; /* Space between the game grid and the ad banner */
+  width: 100%;
+}
+
+/* Side ad container styling */
+.side-ad-container {
+  min-width: 160px; /* Adjust according to your Adsterra native banner size */
+  max-width: 300px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive adjustment for mobile screens */
+@media screen and (max-width: 768px) {
+  .game-and-ad-wrapper {
+    flex-direction: column; /* Stacks the ad under the game grid on smaller screens */
+    align-items: center;
+  }
+}
